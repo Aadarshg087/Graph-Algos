@@ -2,29 +2,66 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/*
+Diskstra = E log V
+Dijkstra algo fails if it has negative edges, then we will use the bellman ford algo
+This algo will work on any graph
+
+*/
+
 void DijkstraAlgo(int V, vector<vector<pair<int, int>>> &adj, int source, int destination)
 {
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     vector<int> dist(V, 1e9);
 
     dist[source] = 0;
-    pq.push({0, source});
 
-    while (pq.size())
+    /* Using Priority Queue */
+
+    // pq.push({0, source});
+    // while (pq.size())
+    // {
+    //     int dis = pq.top().first;
+    //     int node = pq.top().second;
+
+    //     pq.pop();
+
+    //     for (auto it : adj[node])
+    //     {
+    //         int ngbrWeight = it[1];
+    //         int ngbrNode = it[0];
+    //         if (dis + ngbrWeight < dist[ngbrNode])
+    //         {
+    //             dist[ngbrNode] = dis + ngbrWeight;
+    //             pq.push({dist[ngbrNode], ngbrNode});
+    //         }
+    //     }
+    // }
+
+    /* Using set */
+
+    set<pair<int, int>> st;
+    st.insert({0, source});
+
+    while (st.size())
     {
-        int dis = pq.top().first;
-        int node = pq.top().second;
+        auto it = *(st.begin());
+        int node = it.first;
+        int dis = it.second;
+        st.erase(it);
 
-        pq.pop();
-
-        for (auto it : adj[node])
+        for (auto ngbr : adj[node])
         {
-            int ngbrWeight = it[1];
-            int ngbrNode = it[0];
-            if (dis + ngbrWeight < dist[ngbrNode])
+            int ngbrW = ngbr.first;
+            int ngbrNode = ngbr.second;
+
+            if (dis + ngbrW < dist[ngbrNode])
             {
-                dist[ngbrNode] = dis + ngbrWeight;
-                pq.push({dist[ngbrNode], ngbrNode});
+                if (dist[ngbrNode] != 1e9)
+                    st.erase({dist[node], ngbrNode});
+
+                dist[ngbrNode] = dis + ngbrW;
+                st.insert({dist[ngbrNode], ngbrNode});
             }
         }
     }
